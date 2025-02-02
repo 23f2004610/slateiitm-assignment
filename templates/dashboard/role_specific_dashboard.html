@@ -1,0 +1,112 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Slate - Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center space-x-4">
+            <h1 class="text-3xl font-bold text-gray-800">Dashboard</h1>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                {{ role|capfirst }}
+            </span>
+        </div>
+        <form action="{% url 'logout' %}" method="post" class="flex-shrink-0">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                Logout
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+        {% if role == "student" %}
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Your Achievements</h2>
+                <p class="text-sm text-gray-600 mt-1">Track your progress and accomplishments</p>
+            </div>
+            <div class="p-6">
+                {% if achievements %}
+                    <div class="space-y-4">
+                        {% for achievement in achievements %}
+                            <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                                <h3 class="font-semibold text-lg text-gray-800">{{ achievement.name }}</h3>
+                                <p class="text-gray-600 mt-1">{{ achievement.achievement_desc }}</p>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ achievement.date_achieved|date:"F j, Y" }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-500">No achievements recorded yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif role == "parent" %}
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">Student Progress Tracker</h2>
+                {% if student %}
+                    <p class="text-sm text-gray-600 mt-1">Monitoring achievements for {{ student.user.get_full_name }}</p>
+                {% endif %}
+            </div>
+            <div class="p-6">
+                {% if student %}
+                    {% if achievements %}
+                        <div class="space-y-4">
+                            {% for achievement in achievements %}
+                                <div class="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
+                                    <h3 class="font-semibold text-lg text-gray-800">{{ achievement.name }}</h3>
+                                    <p class="text-gray-600 mt-1">{{ achievement.achievement_desc }}</p>
+                                    <div class="mt-2 flex items-center text-sm text-gray-500">
+                                        <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        {{ achievement.date_achieved|date:"F j, Y" }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <p class="text-gray-500">No achievements recorded for this student yet.</p>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-500">No student linked to your account.</p>
+                        <p class="text-sm text-gray-400 mt-2">Please contact the school administrator to link your student.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        {% elif role == "school" %}
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-xl font-semibold text-gray-800">School Overview</h2>
+                <p class="text-sm text-gray-600 mt-1">Key metrics and statistics</p>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-blue-50 rounded-lg p-6">
+                        <div class="text-blue-800 text-2xl font-bold">{{ total_students }}</div>
+                        <div class="text-blue-600 text-sm mt-1">Total Students</div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-6">
+                        <div class="text-green-800 text-2xl font-bold">{{ total_achievements }}</div>
+                        <div class="text-green-600 text-sm mt-1">Total Achievements</div>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-6">
+                        <div class="text-purple-800 text-2xl font-bold">{{ active_parents }}</div>
+                        <div class="text-purple-600 text-sm mt-1">Active Parents</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

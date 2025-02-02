@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <span class="text-xl font-bold text-gray-800">Slate</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">{{ user.get_role_display }}</span>
+                <form method="post" action="{% url 'logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-gray-600 hover:text-gray-800">Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-4 py-8">
+    {% block dashboard_content %}{% endblock %}
+</main>
+{% endblock %}
